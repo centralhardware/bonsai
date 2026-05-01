@@ -38,7 +38,7 @@ public partial class Startup
             })
             .WithHttpTransport(options =>
             {
-                options.IdleTimeout = TimeSpan.FromHours(1);
+                options.IdleTimeout = TimeSpan.FromDays(1);
                 options.MaxIdleSessionCount = 100;
             })
             .WithToolsFromAssembly(typeof(Startup).Assembly, jsonOpts);
