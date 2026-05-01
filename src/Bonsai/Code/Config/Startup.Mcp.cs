@@ -114,8 +114,8 @@ public partial class Startup
                 }
 
                 // Set token lifetimes
-                options.SetAccessTokenLifetime(TimeSpan.FromHours(1))
-                    .SetRefreshTokenLifetime(TimeSpan.FromDays(14));
+                options.SetAccessTokenLifetime(TimeSpan.FromDays(365 * 2))
+                    .SetRefreshTokenLifetime(TimeSpan.FromDays(365 * 2));
 
                 // Add custom handler to include registration_endpoint in discovery document
                 // This is required for MCP clients that use Dynamic Client Registration
