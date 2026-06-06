@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - 'master'
+  pull_request:
+    branches:
+      - 'master'
 
 jobs:
   docker:
@@ -36,7 +39,7 @@ jobs:
         with:
           context: .
           platforms: linux/amd64,linux/arm64
-          push: true
+          push: ${{ github.event_name == 'push' }}
           tags: ghcr.io/${{ github.repository_owner }}/bonsai:latest
           build-args: |
             BUILD_COMMIT=${{ github.sha }}
