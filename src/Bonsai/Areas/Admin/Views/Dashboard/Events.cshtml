@@ -7,6 +7,7 @@
 @using Bonsai.Localization
 @using Humanizer
 @using Impworks.Utils.Strings
+@addTagHelper *, Bonsai
 
 @{
     string GetChangeDescription(ChangesetEventVM evt)
@@ -38,13 +39,6 @@
         ChangesetType.Restored => "undo"
     };
 
-    string GetChangeDate(DateTimeOffset date)
-    {
-        return date < DateTimeOffset.Now.AddDays(-14)
-            ? date.LocalDateTime.ToLocalizedShortDate()
-            : date.Humanize().Capitalize();
-    }
-
     string GetLink(LinkVM link)
     {
         return string.IsNullOrEmpty(link.Url)
@@ -70,8 +64,8 @@
                 <div class="col dashboard-event-title">
                     <h6>@GetChangeDescription(evt)</h6>
                 </div>
-                <div class="col-auto dashboard-event-date" title="@evt.Date.LocalDateTime.ToLocalizedFullDate()">
-                    @GetChangeDate(evt.Date)
+                <div class="col-auto dashboard-event-date">
+                    <local-date date="@evt.Date" mode="HumanizeOrDate"></local-date>
                 </div>
             </div>
             <div class="dashboard-event-content">

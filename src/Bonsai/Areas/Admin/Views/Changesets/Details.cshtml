@@ -2,6 +2,7 @@
 @using Bonsai.Data.Models
 @using Bonsai.Localization
 @using Humanizer
+@addTagHelper *, Bonsai
 
 @model Bonsai.Areas.Admin.ViewModels.Changesets.ChangesetDetailsVM
 @{
@@ -36,7 +37,7 @@
             </dd>
 
             <dt class="col-sm-2">@Texts.Admin_Changesets_Details_Date</dt>
-            <dd class="col-sm-10">@Model.Date.ToLocalTime().ToString(Texts.DateFormat_Changeset) (@Model.Date.ToLocalTime().Humanize())</dd>
+            <dd class="col-sm-10"><local-date date="@Model.Date" mode="Inline"></local-date></dd>
         </dl>
 
         @if(Model.Changes.Any())
