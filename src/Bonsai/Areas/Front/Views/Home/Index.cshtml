@@ -32,9 +32,7 @@
                                 </div>
                                 <div class="home-pages-descr">
                                     <span class="home-pages-descr-title">@p.Title</span>
-                                    <div class="home-pages-descr-date" title="@p.LastUpdateDate.DateTime.ToLongDateString()">
-                                        @p.LastUpdateDate.Humanize()
-                                    </div>
+                                    <local-date class="home-pages-descr-date" date="@p.LastUpdateDate" mode="Humanize"></local-date>
                                 </div>
                             </a>
                         </li>
