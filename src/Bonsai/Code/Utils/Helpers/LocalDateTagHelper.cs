@@ -64,7 +64,7 @@ public class LocalDateTagHelper : TagHelper
                 mode = "humanizeOrDate";
                 body = (Date < DateTimeOffset.Now.AddDays(-HumanizeOrDateThresholdDays)
                     ? local.LocalDateTime.ToLocalizedShortDate()
-                    : relative).Capitalize();
+                    : relative).Transform(To.SentenceCase);
                 output.Attributes.SetAttribute("title", local.LocalDateTime.ToLocalizedFullDate());
                 break;
 
