@@ -42,6 +42,14 @@
         }
     };
 
+    /**
+     * Escapes the HTML special characters in a suggestion.
+     * @param {string} value
+     */
+    function escapeHtml(value) {
+        return $('<div>').text(value || '').html();
+    }
+
     Vue.component('date-picker', {
         template: '#date-picker-template',
         props: ['value', 'size', 'margin'],
@@ -78,6 +86,68 @@
 
         destroyed: function() {
             $(this.$el).datepicker('destroy');
+        }
+    });
+
+    Vue.component('place-autocomplete', {
+        template: '<input type="text" class="form-control form-control-sm mr-2" autocomplete="off" />',
+        props: ['value'],
+
+        mounted: function () {
+            var self = this;
+            var $el = $(self.$el);
+
+            $el.val(self.$props.value || '');
+
+            $el.on('input change', function () {
+                self.$emit('input', this.value);
+            });
+
+            $el.autocomplete({
+                minChars: 3,
+                deferRequestBy: 300,
+                lookup: function (query, done) {
+                    $.ajax({
+                        url: '/admin/suggest/places',
+                        method: 'GET',
+                        data: { query: query }
+                    }).then(
+                        function (result) {
+                            done({
+                                suggestions: (result || []).map(function (elem) {
+                                    return { value: elem.value, data: elem };
+                                })
+                            });
+                        },
+                        function () {
+                            done({ suggestions: [] });
+                        }
+                    );
+                },
+                formatResult: function (suggestion) {
+                    var place = suggestion.data || {};
+                    var title = escapeHtml(place.title || suggestion.value || '');
+                    return place.description
+                        ? title + ' <span class="text-muted">' + escapeHtml(place.description) + '</span>'
+                        : title;
+                },
+                onSelect: function (suggestion) {
+                    self.$emit('input', suggestion.value);
+                }
+            });
+        },
+
+        watch: {
+            value: function (value) {
+                var $el = $(this.$el);
+                if ($el.val() !== value) {
+                    $el.val(value || '');
+                }
+            }
+        },
+
+        destroyed: function () {
+            $(this.$el).autocomplete('dispose');
         }
     });
 

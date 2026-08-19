@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
 using Bonsai.Areas.Admin.Logic;
 using Bonsai.Areas.Admin.Logic.Changesets;
 using Bonsai.Areas.Admin.Logic.MediaHandlers;
@@ -8,6 +9,7 @@ using Bonsai.Areas.Front.Logic.Auth;
 using Bonsai.Areas.Front.Logic.Relations;
 using Bonsai.Code.Services;
 using Bonsai.Code.Services.Config;
+using Bonsai.Code.Services.Places;
 using Jering.Javascript.NodeJS;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.DependencyInjection;
@@ -40,6 +42,8 @@ public partial class Startup
 
         services.AddSingleton<StartupService>();
 
+        ConfigurePlaceServices(services);
+
         // frontend
         services.AddScoped<RelationsPresenterService>();
         services.AddScoped<PagePresenterService>();
@@ -69,5 +73,25 @@ public partial class Startup
         services.AddScoped<IMediaHandler, PhotoMediaHandler>();
         services.AddScoped<IMediaHandler, VideoMediaHandler>();
         services.AddScoped<IMediaHandler, PdfMediaHandler>();
+    }
+
+    /// <summary>
+    /// Registers the geocoding provider for place autocompletion (if configured).
+    /// </summary>
+    private void ConfigurePlaceServices(IServiceCollection services)
+    {
+        var key = Configuration.Places?.GoogleApiKey;
+        if (string.IsNullOrWhiteSpace(key))
+        {
+            services.AddSingleton<IPlaceSuggestService, DisabledPlaceSuggestService>();
+            return;
+        }
+
+        services.AddHttpClient<IPlaceSuggestService, GooglePlaceSuggestService>(client =>
+        {
+            client.DefaultRequestHeaders.Add("X-Goog-Api-Key", key);
+            client.DefaultRequestHeaders.Add("X-Goog-FieldMask", "suggestions.placePrediction.text.text,suggestions.placePrediction.structuredFormat");
+            client.Timeout = TimeSpan.FromSeconds(10);
+        });
     }
 }

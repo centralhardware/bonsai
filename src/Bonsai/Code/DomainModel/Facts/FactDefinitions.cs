@@ -29,14 +29,14 @@ public static class FactDefinitions
                     Texts.Facts_Group_Birth,
                     true,
                     new FactDefinition<BirthDateFactModel>("Date", Texts.Facts_Birth_Day, Texts.Facts_Birth_DayS),
-                    new FactDefinition<StringFactModel>("Place", Texts.Facts_Birth_Place, Texts.Facts_Birth_PlaceS)
+                    new FactDefinition<PlaceFactModel>("Place", Texts.Facts_Birth_Place, Texts.Facts_Birth_PlaceS)
                 ),
                 new FactDefinitionGroup(
                     "Death",
                     Texts.Facts_Group_Death,
                     true,
                     new FactDefinition<DeathDateFactModel>("Date", Texts.Facts_Death_Date, Texts.Facts_Death_DateS),
-                    new FactDefinition<StringFactModel>("Place", Texts.Facts_Death_Place, Texts.Facts_Death_PlaceS),
+                    new FactDefinition<PlaceFactModel>("Place", Texts.Facts_Death_Place, Texts.Facts_Death_PlaceS),
                     new FactDefinition<StringFactModel>("Cause", Texts.Facts_Death_Cause, Texts.Facts_Death_CauseS),
                     new FactDefinition<StringFactModel>("Burial", Texts.Facts_Death_Burial, Texts.Facts_Death_BurialS)
                 ),
@@ -79,14 +79,14 @@ public static class FactDefinitions
                     Texts.Facts_Group_Birth,
                     true,
                     new FactDefinition<BirthDateFactModel>("Date", Texts.Facts_Birth_Day, Texts.Facts_Birth_DayS),
-                    new FactDefinition<StringFactModel>("Place", Texts.Facts_Birth_Place, Texts.Facts_Birth_PlaceS)
+                    new FactDefinition<PlaceFactModel>("Place", Texts.Facts_Birth_Place, Texts.Facts_Birth_PlaceS)
                 ),
                 new FactDefinitionGroup(
                     "Death",
                     Texts.Facts_Group_Death,
                     true,
                     new FactDefinition<DeathDateFactModel>("Date", Texts.Facts_Death_Date, Texts.Facts_Death_DateS),
-                    new FactDefinition<StringFactModel>("Place", Texts.Facts_Death_Place, Texts.Facts_Death_PlaceS),
+                    new FactDefinition<PlaceFactModel>("Place", Texts.Facts_Death_Place, Texts.Facts_Death_PlaceS),
                     new FactDefinition<StringFactModel>("Cause", Texts.Facts_Death_Cause, Texts.Facts_Death_CauseS),
                     new FactDefinition<StringFactModel>("Burial", Texts.Facts_Death_Burial, Texts.Facts_Death_BurialS)
                 ),

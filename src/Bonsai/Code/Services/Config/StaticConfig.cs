@@ -12,6 +12,7 @@ public class StaticConfig
     public WebServerConfig WebServer { get; set; }
     public DemoModeConfig DemoMode { get; set; }
     public AuthConfig Auth { get; set; }
+    public PlacesConfig Places { get; set; }
     public string Locale { get; set; }
     public string BuildCommit { get; set; }
 }
@@ -41,6 +42,18 @@ public class WebServerConfig
 {
     public bool RequireHttps { get; set; }
     public long? MaxUploadSize { get; set; }
+}
+
+/// <summary>
+/// Settings of the geocoding provider used for place autocompletion.
+/// </summary>
+public class PlacesConfig
+{
+    /// <summary>
+    /// API key for the Google Places API.
+    /// Autocompletion is disabled if the key is not specified.
+    /// </summary>
+    public string GoogleApiKey { get; set; }
 }
 
 /// <summary>

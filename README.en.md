@@ -124,6 +124,23 @@ For development, you will need the following:
     ```
 8. Run the app (as Visual Studio project or using `dotnet run`).
 
+## Place autocompletion
+
+The "Place of birth" and "Place of death" fields can suggest full place names via the [Google Places API](https://developers.google.com/maps/documentation/places/web-service/place-autocomplete).
+
+To enable the suggestions, create an API key in the [Google Cloud Console](https://console.cloud.google.com/) with access to *Places API (New)* and specify it in the configuration:
+
+```
+{
+  "Places": {
+    "GoogleApiKey": "<...>"
+  }
+}
+```
+
+The key is only used on the server: the browser talks to Bonsai itself, which proxies the request to Google.
+If the key is not specified, the fields work as plain text inputs - no suggestions are displayed.
+
 ## Security considerations
 
 ### Data backup

@@ -1,0 +1,21 @@
+@using Bonsai.Localization
+<script type="text/x-template" data-kind="fact-template" id="PlaceFactModel">
+    <div class="fact-wrapper">
+        <h6>
+            {{def.title}}
+            <button type="button" class="btn btn-outline-secondary btn-sm" v-if="empty()" v-on:click="set({Value: ''})" title="@Texts.Admin_Pages_Facts_Add">
+                <i class="fa fa-plus"></i>
+            </button>
+        </h6>
+        <div v-if="!empty()" class="row">
+            <div class="col-sm-8">
+                <div class="fact-long">
+                    <place-autocomplete v-model="data[def.key].Value"></place-autocomplete>
+                    <button type="button" class="btn btn-sm btn-outline-danger btn-remove-fact" v-on:click="unset" title="@Texts.Admin_Pages_Facts_Remove">
+                        <i class="fa fa-remove"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</script>

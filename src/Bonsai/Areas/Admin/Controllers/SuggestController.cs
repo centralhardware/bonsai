@@ -2,6 +2,7 @@
 using Bonsai.Areas.Admin.Logic;
 using Bonsai.Areas.Admin.ViewModels.Common;
 using Bonsai.Areas.Admin.ViewModels.Relations;
+using Bonsai.Code.Services.Places;
 using Bonsai.Data.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,7 +12,7 @@ namespace Bonsai.Areas.Admin.Controllers;
 /// Controller for ajax lookups.
 /// </summary>
 [Route("admin")]
-public class SuggestController(SuggestService suggestSvc) : AdminControllerBase
+public class SuggestController(SuggestService suggestSvc, IPlaceSuggestService placeSvc) : AdminControllerBase
 {
     /// <summary>
     /// Suggests pages for relation destination / media tag.
@@ -33,6 +34,17 @@ public class SuggestController(SuggestService suggestSvc) : AdminControllerBase
     {
         var pages = await suggestSvc.SuggestRelationPagesAsync(vm);
         return Json(pages);
+    }
+
+    /// <summary>
+    /// Suggests places for place-related facts.
+    /// </summary>
+    [HttpGet]
+    [Route("suggest/places")]
+    public async Task<ActionResult> SuggestPlaces([FromQuery] string query)
+    {
+        var places = await placeSvc.SuggestAsync(query, HttpContext.RequestAborted);
+        return Json(places);
     }
 
     /// <summary>
