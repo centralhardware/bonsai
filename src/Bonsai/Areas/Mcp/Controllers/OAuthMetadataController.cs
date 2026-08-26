@@ -33,7 +33,7 @@ public class OAuthMetadataController(BonsaiConfigService configService) : Contro
             UserinfoEndpoint = $"{baseUrl}/oauth/userinfo",
             RegistrationEndpoint = $"{baseUrl}/oauth/register",
             JwksUri = $"{baseUrl}/.well-known/jwks",
-            ScopesSupported = ["openid", "profile", "email", "mcp"],
+            ScopesSupported = ["openid", "profile", "email", "mcp", "offline_access"],
             ResponseTypesSupported = ["code"],
             ResponseModesSupported = ["query", "fragment"],
             GrantTypesSupported = ["authorization_code", "refresh_token", "client_credentials"],
@@ -43,6 +43,40 @@ public class OAuthMetadataController(BonsaiConfigService configService) : Contro
             IdTokenSigningAlgValuesSupported = ["RS256"],
             ClaimsSupported = ["sub", "name", "email", "email_verified", "bonsai_role"],
             ServiceDocumentation = $"{baseUrl}/mcp/api-keys"
+        };
+
+        return Ok(metadata);
+    }
+
+    /// <summary>
+    /// Returns OAuth 2.0 Protected Resource Metadata (RFC 9728).
+    /// </summary>
+    /// <remarks>
+    /// This is the document the MCP specification (2025-06-18) tells clients to fetch first:
+    /// it points at the authorization server and lists the scopes the resource understands.
+    /// Clients that derive their authorization scope from it send no scope at all when it is
+    /// missing, which silently costs them offline_access - and therefore the refresh token.
+    /// The suffixed route serves the resource-path form, e.g.
+    /// /.well-known/oauth-protected-resource/mcp/server.
+    /// </remarks>
+    [HttpGet("/.well-known/oauth-protected-resource")]
+    [HttpGet("/.well-known/oauth-protected-resource/{*path}")]
+    public IActionResult GetProtectedResourceMetadata(string path = null)
+    {
+        if (!configService.GetDynamicConfig().McpEnabled)
+        {
+            return BadRequest(new { error = "server_error", error_description = "MCP server is disabled. Enable it in the admin configuration." });
+        }
+
+        var baseUrl = $"{Request.Scheme}://{Request.Host}";
+
+        var metadata = new OAuthProtectedResourceMetadata
+        {
+            Resource = $"{baseUrl}/mcp/server",
+            AuthorizationServers = [baseUrl],
+            ScopesSupported = ["openid", "profile", "email", "mcp", "offline_access"],
+            BearerMethodsSupported = ["header"],
+            ResourceDocumentation = $"{baseUrl}/mcp/api-keys"
         };
 
         return Ok(metadata);
@@ -113,6 +147,24 @@ public class OAuthServerMetadata
 
     [JsonPropertyName("service_documentation")]
     public string ServiceDocumentation { get; set; }
+}
+
+public class OAuthProtectedResourceMetadata
+{
+    [JsonPropertyName("resource")]
+    public string Resource { get; set; }
+
+    [JsonPropertyName("authorization_servers")]
+    public string[] AuthorizationServers { get; set; }
+
+    [JsonPropertyName("scopes_supported")]
+    public string[] ScopesSupported { get; set; }
+
+    [JsonPropertyName("bearer_methods_supported")]
+    public string[] BearerMethodsSupported { get; set; }
+
+    [JsonPropertyName("resource_documentation")]
+    public string ResourceDocumentation { get; set; }
 }
 
 #endregion

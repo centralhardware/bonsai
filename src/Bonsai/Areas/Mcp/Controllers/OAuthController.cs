@@ -28,6 +28,18 @@ public class OAuthController(
     BonsaiConfigService configService)
     : Controller
 {
+    /// <summary>
+    /// Scopes granted to a client that does not request any explicitly.
+    /// </summary>
+    /// <remarks>
+    /// MCP clients are long-running agents: without offline_access they get no refresh token
+    /// and must be re-authorized interactively every time the access token expires, which is
+    /// unusable on a headless machine. Not every client asks for scopes - some derive them
+    /// from the protected resource metadata and send none when it is missing - so an empty
+    /// scope list is treated as "everything this server offers" rather than "nothing".
+    /// </remarks>
+    private static readonly string[] DefaultScopes =
+        [Scopes.OpenId, Scopes.Profile, Scopes.Email, "mcp", Scopes.OfflineAccess];
 
     /// <summary>
     /// Authorization endpoint - handles OAuth authorization requests.
@@ -68,15 +80,17 @@ public class OAuthController(
         var application = await applicationManager.FindByClientIdAsync(request.ClientId!) ??
             throw new InvalidOperationException("The application details cannot be found.");
 
-        // Retrieve the permanent authorizations associated with the user and the calling client application
+        var principal = await CreateUserPrincipalAsync(user, request);
+
+        // Retrieve the permanent authorizations associated with the user and the calling client
+        // application. The effective scopes are used rather than the requested ones, so that an
+        // authorization stored for a scope-less request is not reused for a full grant.
         var authorizations = await authorizationManager.FindAsync(
             subject: await userManager.GetUserIdAsync(user),
             client: await applicationManager.GetIdAsync(application) ?? throw new InvalidOperationException(),
             status: Statuses.Valid,
             type: AuthorizationTypes.Permanent,
-            scopes: request.GetScopes()).ToListAsync();
-
-        var principal = await CreateUserPrincipalAsync(user, request);
+            scopes: principal.GetScopes()).ToListAsync();
 
         // Automatically grant consent for MCP clients (since they're registered dynamically)
         // In a more restrictive scenario, you might want to show a consent screen
@@ -147,9 +161,9 @@ public class OAuthController(
             // Without carrying them over, offline_access is lost here and OpenIddict never
             // issues a refresh token, forcing the client to re-authorize every hour.
             var scopes = request.GetScopes();
-            if (scopes.IsEmpty && result.Principal is not null)
+            if (scopes.IsEmpty && result.Principal?.GetScopes() is { IsEmpty: false } granted)
             {
-                principal.SetScopes(result.Principal.GetScopes());
+                principal.SetScopes(granted);
 
                 // GetDestinations inspects the principal's scopes, so it must run again.
                 principal.SetDestinations(GetDestinations);
@@ -214,7 +228,12 @@ public class OAuthController(
 
         identity.AddClaim(new Claim("bonsai_role", userRole.ToString()));
 
-        principal.SetScopes(request.GetScopes());
+        var scopes = request.GetScopes();
+        if (scopes.IsEmpty)
+            principal.SetScopes(DefaultScopes);
+        else
+            principal.SetScopes(scopes);
+
         principal.SetResources("bonsai-mcp");
         principal.SetDestinations(GetDestinations);
 
