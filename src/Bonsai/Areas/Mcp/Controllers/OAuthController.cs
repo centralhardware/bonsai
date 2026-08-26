@@ -142,6 +142,19 @@ public class OAuthController(
 
             var principal = await CreateUserPrincipalAsync(user, request);
 
+            // A token request carries no `scope` parameter: the scopes were granted at the
+            // authorization endpoint and live on the authorization code (or the refresh token).
+            // Without carrying them over, offline_access is lost here and OpenIddict never
+            // issues a refresh token, forcing the client to re-authorize every hour.
+            var scopes = request.GetScopes();
+            if (scopes.IsEmpty && result.Principal is not null)
+            {
+                principal.SetScopes(result.Principal.GetScopes());
+
+                // GetDestinations inspects the principal's scopes, so it must run again.
+                principal.SetDestinations(GetDestinations);
+            }
+
             // Set the authorization id from the original token
             var authorizationId = result.Principal?.GetAuthorizationId();
             if (!string.IsNullOrEmpty(authorizationId))
