@@ -50,15 +50,9 @@ public class OAuthMetadataController(BonsaiConfigService configService) : Contro
 
     /// <summary>
     /// Returns OAuth 2.0 Protected Resource Metadata (RFC 9728).
+    /// Clients derive their authorization scope from it, so a missing document costs them
+    /// offline_access. The catch-all route serves the resource-path form.
     /// </summary>
-    /// <remarks>
-    /// This is the document the MCP specification (2025-06-18) tells clients to fetch first:
-    /// it points at the authorization server and lists the scopes the resource understands.
-    /// Clients that derive their authorization scope from it send no scope at all when it is
-    /// missing, which silently costs them offline_access - and therefore the refresh token.
-    /// The suffixed route serves the resource-path form, e.g.
-    /// /.well-known/oauth-protected-resource/mcp/server.
-    /// </remarks>
     [HttpGet("/.well-known/oauth-protected-resource")]
     [HttpGet("/.well-known/oauth-protected-resource/{*path}")]
     public IActionResult GetProtectedResourceMetadata(string path = null)

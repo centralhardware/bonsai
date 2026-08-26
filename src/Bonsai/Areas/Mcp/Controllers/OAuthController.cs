@@ -29,15 +29,8 @@ public class OAuthController(
     : Controller
 {
     /// <summary>
-    /// Scopes granted to a client that does not request any explicitly.
+    /// Scopes granted to a client that requests none explicitly.
     /// </summary>
-    /// <remarks>
-    /// MCP clients are long-running agents: without offline_access they get no refresh token
-    /// and must be re-authorized interactively every time the access token expires, which is
-    /// unusable on a headless machine. Not every client asks for scopes - some derive them
-    /// from the protected resource metadata and send none when it is missing - so an empty
-    /// scope list is treated as "everything this server offers" rather than "nothing".
-    /// </remarks>
     private static readonly string[] DefaultScopes =
         [Scopes.OpenId, Scopes.Profile, Scopes.Email, "mcp", Scopes.OfflineAccess];
 
@@ -83,8 +76,7 @@ public class OAuthController(
         var principal = await CreateUserPrincipalAsync(user, request);
 
         // Retrieve the permanent authorizations associated with the user and the calling client
-        // application. The effective scopes are used rather than the requested ones, so that an
-        // authorization stored for a scope-less request is not reused for a full grant.
+        // application, matching on the effective scopes rather than the requested ones.
         var authorizations = await authorizationManager.FindAsync(
             subject: await userManager.GetUserIdAsync(user),
             client: await applicationManager.GetIdAsync(application) ?? throw new InvalidOperationException(),
@@ -156,17 +148,13 @@ public class OAuthController(
 
             var principal = await CreateUserPrincipalAsync(user, request);
 
-            // A token request carries no `scope` parameter: the scopes were granted at the
-            // authorization endpoint and live on the authorization code (or the refresh token).
-            // Without carrying them over, offline_access is lost here and OpenIddict never
-            // issues a refresh token, forcing the client to re-authorize every hour.
+            // A token request carries no scope parameter: preserve the ones granted earlier,
+            // otherwise offline_access is lost and no refresh token is issued.
             var scopes = request.GetScopes();
             if (scopes.IsEmpty && result.Principal?.GetScopes() is { IsEmpty: false } granted)
             {
                 principal.SetScopes(granted);
-
-                // GetDestinations inspects the principal's scopes, so it must run again.
-                principal.SetDestinations(GetDestinations);
+                principal.SetDestinations(GetDestinations); // depends on the scopes
             }
 
             // Set the authorization id from the original token
