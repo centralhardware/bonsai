@@ -49,4 +49,15 @@ public class DynamicConfig
     /// Flag indicating whether the MCP server is enabled for AI agent access.
     /// </summary>
     public bool McpEnabled { get; set; }
+
+    /// <summary>
+    /// Flag indicating that the events can be exported as an iCalendar (*.ics) feed.
+    /// </summary>
+    public bool CalendarExportEnabled { get; set; }
+
+    /// <summary>
+    /// Secret part of the iCalendar feed's address.
+    /// </summary>
+    [StringLength(64)]
+    public string CalendarFeedKey { get; set; }
 }
