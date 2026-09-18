@@ -1,7 +1,8 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Bonsai.Areas.Front.ViewModels.Calendar;
 using Bonsai.Code.DomainModel.Relations;
 using Bonsai.Code.Utils.Date;
 using Bonsai.Code.Utils.Format;
@@ -34,30 +35,11 @@ public class CalendarExportPresenterService
     {
         var context = await RelationContext.LoadContextAsync(_db);
 
-        var ics = new IcsBuilder(calendarName);
+        var events = GetPageEvents(context, baseUrl)
+                     .Concat(GetRelationEvents(context, baseUrl))
+                     .Concat(await GetOneTimeEventsAsync(baseUrl));
 
-        foreach (var evt in GetPageEvents(context))
-            Write(evt);
-
-        foreach (var evt in GetRelationEvents(context))
-            Write(evt);
-
-        foreach (var evt in await GetOneTimeEventsAsync())
-            Write(evt);
-
-        return ics.Build();
-
-        void Write(ExportedEvent evt)
-        {
-            ics.AddAllDayEvent(
-                evt.Uid,
-                evt.Date,
-                evt.Title,
-                evt.PageKey == null ? null : baseUrl + "/p/" + Uri.EscapeDataString(evt.PageKey),
-                evt.RepeatsYearly,
-                evt.RepeatsUntil
-            );
-        }
+        return IcsSerializer.Serialize(calendarName, events);
     }
 
     #region Private helpers
@@ -65,31 +47,31 @@ public class CalendarExportPresenterService
     /// <summary>
     /// Infers birth and death events for all pages.
     /// </summary>
-    private IEnumerable<ExportedEvent> GetPageEvents(RelationContext context)
+    private IEnumerable<CalendarExportEventVM> GetPageEvents(RelationContext context, string baseUrl)
     {
         foreach (var page in context.Pages.Values)
         {
             // a birthday of a deceased person is not an ongoing anniversary
             if (page.DeathDate == null && page.BirthDate is FuzzyDate birth && GetAnniversaryDate(birth) is DateTime birthDate)
             {
-                yield return new ExportedEvent
+                yield return new CalendarExportEventVM
                 {
                     Uid = $"birth-{page.Id:N}@bonsai",
                     Date = birthDate,
                     Title = FormatTitle(page.Title, Texts.CalendarPresenter_Birthday_Anniversary),
-                    PageKey = page.Key,
+                    Url = GetPageUrl(baseUrl, page.Key),
                     RepeatsYearly = true
                 };
             }
 
             if (page.DeathDate is FuzzyDate death && GetAnniversaryDate(death) is DateTime deathDate)
             {
-                yield return new ExportedEvent
+                yield return new CalendarExportEventVM
                 {
                     Uid = $"death-{page.Id:N}@bonsai",
                     Date = deathDate,
                     Title = FormatTitle(page.Title, Texts.CalendarPresenter_Death_Anniversary),
-                    PageKey = page.Key,
+                    Url = GetPageUrl(baseUrl, page.Key),
                     RepeatsYearly = true
                 };
             }
@@ -99,7 +81,7 @@ public class CalendarExportPresenterService
     /// <summary>
     /// Infers relation-based events (weddings, adoptions).
     /// </summary>
-    private IEnumerable<ExportedEvent> GetRelationEvents(RelationContext context)
+    private IEnumerable<CalendarExportEventVM> GetRelationEvents(RelationContext context, string baseUrl)
     {
         var visited = new HashSet<string>();
 
@@ -126,12 +108,12 @@ public class CalendarExportPresenterService
 
             if (rel.Type == RelationType.Spouse)
             {
-                yield return new ExportedEvent
+                yield return new CalendarExportEventVM
                 {
                     Uid = $"wedding-{pairKey}@bonsai",
                     Date = date,
                     Title = FormatTitle($"{source.Title} & {dest.Title}", Texts.CalendarPresenter_Wedding_Anniversary),
-                    PageKey = GetEventPageKey(context, rel.EventId),
+                    Url = GetPageUrl(baseUrl, GetEventPageKey(context, rel.EventId)),
                     RepeatsYearly = true,
                     // the marriage has ended: the anniversary is not celebrated anymore
                     RepeatsUntil = duration.RangeEnd is FuzzyDate end ? GetExactDate(end) : null
@@ -143,12 +125,12 @@ public class CalendarExportPresenterService
                     continue;
 
                 var pet = rel.Type == RelationType.Pet ? source : dest;
-                yield return new ExportedEvent
+                yield return new CalendarExportEventVM
                 {
                     Uid = $"petadoption-{pairKey}@bonsai",
                     Date = exact,
                     Title = FormatTitle(pet.Title, Texts.CalendarPresenter_PetAdoption_Title),
-                    PageKey = pet.Key
+                    Url = GetPageUrl(baseUrl, pet.Key)
                 };
             }
             else if (rel.Type is RelationType.StepChild or RelationType.StepParent)
@@ -161,12 +143,12 @@ public class CalendarExportPresenterService
                     ? Texts.CalendarPresenter_ChildAdoptionF
                     : Texts.CalendarPresenter_ChildAdoptionM;
 
-                yield return new ExportedEvent
+                yield return new CalendarExportEventVM
                 {
                     Uid = $"childadoption-{pairKey}@bonsai",
                     Date = exact,
                     Title = FormatTitle(child.Title, title),
-                    PageKey = child.Key
+                    Url = GetPageUrl(baseUrl, child.Key)
                 };
             }
         }
@@ -175,9 +157,9 @@ public class CalendarExportPresenterService
     /// <summary>
     /// Returns the events described by pages of the Event type.
     /// </summary>
-    private async Task<IReadOnlyList<ExportedEvent>> GetOneTimeEventsAsync()
+    private async Task<IReadOnlyList<CalendarExportEventVM>> GetOneTimeEventsAsync(string baseUrl)
     {
-        var result = new List<ExportedEvent>();
+        var result = new List<CalendarExportEventVM>();
         var evtPages = await _db.Pages
                                 .Where(x => x.Type == PageType.Event
                                             && x.IsDeleted == false
@@ -196,12 +178,12 @@ public class CalendarExportPresenterService
             if (GetExactDate(date) is not DateTime exact)
                 continue;
 
-            result.Add(new ExportedEvent
+            result.Add(new CalendarExportEventVM
             {
                 Uid = $"event-{evtPage.Id:N}@bonsai",
                 Date = exact,
                 Title = evtPage.Title,
-                PageKey = evtPage.Key
+                Url = GetPageUrl(baseUrl, evtPage.Key)
             });
         }
 
@@ -238,6 +220,14 @@ public class CalendarExportPresenterService
     }
 
     /// <summary>
+    /// Returns the absolute address of a page, if it is available.
+    /// </summary>
+    private static string GetPageUrl(string baseUrl, string key)
+    {
+        return key == null ? null : baseUrl + "/p/" + Uri.EscapeDataString(key);
+    }
+
+    /// <summary>
     /// Returns the identity of a pair of pages, regardless of the order of the relation.
     /// </summary>
     private static string GetPairKey(Guid first, Guid second)
@@ -264,19 +254,6 @@ public class CalendarExportPresenterService
     private static string FormatTitle(string subject, string kind)
     {
         return string.Format(Texts.Calendar_Export_TitleFormat, subject, kind);
-    }
-
-    /// <summary>
-    /// An event prepared for serialization.
-    /// </summary>
-    private class ExportedEvent
-    {
-        public string Uid { get; init; }
-        public DateTime Date { get; init; }
-        public string Title { get; init; }
-        public string PageKey { get; init; }
-        public bool RepeatsYearly { get; init; }
-        public DateTime? RepeatsUntil { get; init; }
     }
 
     #endregion
