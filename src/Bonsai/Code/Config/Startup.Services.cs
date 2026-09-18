@@ -43,6 +43,7 @@ public partial class Startup
         services.AddScoped<PagePresenterService>();
         services.AddScoped<MediaPresenterService>();
         services.AddScoped<CalendarPresenterService>();
+        services.AddScoped<CalendarExportPresenterService>();
         services.AddScoped<SearchPresenterService>();
         services.AddScoped<TreePresenterService>();
         services.AddScoped<AuthService>();

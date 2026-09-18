@@ -18,7 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\bonsai\Bonsai.csproj" />
+    <ProjectReference Include="..\Bonsai\Bonsai.csproj" />
   </ItemGroup>
 
 </Project>
