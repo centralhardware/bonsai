@@ -39,7 +39,7 @@ public partial class Startup
             })
             .WithHttpTransport(options =>
             {
-                options.IdleTimeout = TimeSpan.FromHours(1);
+                options.IdleTimeout = TimeSpan.FromDays(1);
                 options.MaxIdleSessionCount = 100;
             })
             .WithToolsFromAssembly(typeof(Startup).Assembly, jsonOpts);
@@ -102,7 +102,7 @@ public partial class Startup
 
                 // Set token lifetimes
                 options.SetAccessTokenLifetime(TimeSpan.FromHours(1))
-                    .SetRefreshTokenLifetime(TimeSpan.FromDays(14));
+                    .SetRefreshTokenLifetime(TimeSpan.FromDays(365 * 5));
 
                 // Add custom handler to include registration_endpoint in discovery document
                 // This is required for MCP clients that use Dynamic Client Registration

@@ -1,4 +1,4 @@
-using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 using Bonsai.Code.Services.Config;
 using Microsoft.AspNetCore.Mvc;
 
@@ -94,70 +94,70 @@ public class OAuthMetadataController(BonsaiConfigService configService) : Contro
 
 public class OAuthServerMetadata
 {
-    [JsonPropertyName("issuer")]
+    [JsonProperty("issuer")]
     public string Issuer { get; set; }
 
-    [JsonPropertyName("authorization_endpoint")]
+    [JsonProperty("authorization_endpoint")]
     public string AuthorizationEndpoint { get; set; }
 
-    [JsonPropertyName("token_endpoint")]
+    [JsonProperty("token_endpoint")]
     public string TokenEndpoint { get; set; }
 
-    [JsonPropertyName("userinfo_endpoint")]
+    [JsonProperty("userinfo_endpoint")]
     public string UserinfoEndpoint { get; set; }
 
-    [JsonPropertyName("registration_endpoint")]
+    [JsonProperty("registration_endpoint")]
     public string RegistrationEndpoint { get; set; }
 
-    [JsonPropertyName("jwks_uri")]
+    [JsonProperty("jwks_uri")]
     public string JwksUri { get; set; }
 
-    [JsonPropertyName("scopes_supported")]
+    [JsonProperty("scopes_supported")]
     public string[] ScopesSupported { get; set; }
 
-    [JsonPropertyName("response_types_supported")]
+    [JsonProperty("response_types_supported")]
     public string[] ResponseTypesSupported { get; set; }
 
-    [JsonPropertyName("response_modes_supported")]
+    [JsonProperty("response_modes_supported")]
     public string[] ResponseModesSupported { get; set; }
 
-    [JsonPropertyName("grant_types_supported")]
+    [JsonProperty("grant_types_supported")]
     public string[] GrantTypesSupported { get; set; }
 
-    [JsonPropertyName("token_endpoint_auth_methods_supported")]
+    [JsonProperty("token_endpoint_auth_methods_supported")]
     public string[] TokenEndpointAuthMethodsSupported { get; set; }
 
-    [JsonPropertyName("code_challenge_methods_supported")]
+    [JsonProperty("code_challenge_methods_supported")]
     public string[] CodeChallengeMethodsSupported { get; set; }
 
-    [JsonPropertyName("subject_types_supported")]
+    [JsonProperty("subject_types_supported")]
     public string[] SubjectTypesSupported { get; set; }
 
-    [JsonPropertyName("id_token_signing_alg_values_supported")]
+    [JsonProperty("id_token_signing_alg_values_supported")]
     public string[] IdTokenSigningAlgValuesSupported { get; set; }
 
-    [JsonPropertyName("claims_supported")]
+    [JsonProperty("claims_supported")]
     public string[] ClaimsSupported { get; set; }
 
-    [JsonPropertyName("service_documentation")]
+    [JsonProperty("service_documentation")]
     public string ServiceDocumentation { get; set; }
 }
 
 public class OAuthProtectedResourceMetadata
 {
-    [JsonPropertyName("resource")]
+    [JsonProperty("resource")]
     public string Resource { get; set; }
 
-    [JsonPropertyName("authorization_servers")]
+    [JsonProperty("authorization_servers")]
     public string[] AuthorizationServers { get; set; }
 
-    [JsonPropertyName("scopes_supported")]
+    [JsonProperty("scopes_supported")]
     public string[] ScopesSupported { get; set; }
 
-    [JsonPropertyName("bearer_methods_supported")]
+    [JsonProperty("bearer_methods_supported")]
     public string[] BearerMethodsSupported { get; set; }
 
-    [JsonPropertyName("resource_documentation")]
+    [JsonProperty("resource_documentation")]
     public string ResourceDocumentation { get; set; }
 }
 
