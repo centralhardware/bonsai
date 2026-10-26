@@ -10,6 +10,7 @@
     Layout = "~/Areas/Admin/Views/Layout.cshtml";
 
     var config = ConfigService.GetStaticConfig();
+    var feedUrl = $"{Context.Request.Scheme}://{Context.Request.Host}/util/cal/feed/{Model.CalendarFeedKey}.ics";
 }
 
 <h1>@ViewBag.Title</h1>
@@ -150,6 +151,40 @@
                         </small>
                     </div>
                 </div>
+            </div>
+
+            <div class="config-section">
+                <h4>@Texts.Admin_Config_Calendar</h4>
+
+                <div class="form-group row">
+                    <label class="col-sm-3">@Texts.Admin_Config_Calendar</label>
+                    <div class="col-sm-9">
+                        <div class="custom-control custom-checkbox">
+                            <input type="checkbox" asp-for="CalendarExportEnabled" class="custom-control-input" id="CalendarExportEnabled" />
+                            <label class="custom-control-label" for="CalendarExportEnabled">
+                                @Texts.Admin_Config_Calendar_Enabled<br />
+                                <small class="text-muted">@Texts.Admin_Config_Calendar_EnabledDescription</small>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                @if (!string.IsNullOrEmpty(Model.CalendarFeedKey))
+                {
+                    <div class="form-group row">
+                        <label class="col-sm-3">@Texts.Admin_Config_Calendar_FeedUrl</label>
+                        <div class="col-sm-9">
+                            <input class="form-control" readonly value="@feedUrl" onclick="this.select()" />
+                            <span class="small text-muted">@Texts.Admin_Config_Calendar_FeedUrlDescription</span>
+                            <div class="custom-control custom-checkbox mt-2">
+                                <input type="checkbox" asp-for="RegenerateCalendarFeedKey" class="custom-control-input" id="RegenerateCalendarFeedKey" />
+                                <label class="custom-control-label" for="RegenerateCalendarFeedKey">
+                                    @Texts.Admin_Config_Calendar_Regenerate
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                }
+                <input type="hidden" asp-for="CalendarFeedKey" />
             </div>
 
             @if (!ViewData.ModelState.IsValid)

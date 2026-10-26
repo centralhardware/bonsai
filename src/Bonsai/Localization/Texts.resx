@@ -2383,4 +2383,28 @@
   <data name="Front_Media_PhotoTitlePlaceholder" xml:space="preserve">
     <value>Фото</value>
   </data>
+  <data name="Calendar_Export_TitleFormat" xml:space="preserve">
+    <value>{0} — {1}</value>
+  </data>
+  <data name="Front_Calendar_Export" xml:space="preserve">
+    <value>Экспорт</value>
+  </data>
+  <data name="Admin_Config_Calendar" xml:space="preserve">
+    <value>Экспорт календаря</value>
+  </data>
+  <data name="Admin_Config_Calendar_Enabled" xml:space="preserve">
+    <value>Разрешён</value>
+  </data>
+  <data name="Admin_Config_Calendar_EnabledDescription" xml:space="preserve">
+    <value>События можно скачать в формате iCalendar (*.ics) или подписаться на них в Google Calendar, Outlook или Apple Calendar.</value>
+  </data>
+  <data name="Admin_Config_Calendar_FeedUrl" xml:space="preserve">
+    <value>Адрес подписки</value>
+  </data>
+  <data name="Admin_Config_Calendar_FeedUrlDescription" xml:space="preserve">
+    <value>Каждый, кто знает этот адрес, может читать события без входа на сайт.</value>
+  </data>
+  <data name="Admin_Config_Calendar_Regenerate" xml:space="preserve">
+    <value>Создать новый адрес при сохранении (старый перестанет работать)</value>
+  </data>
 </root>

@@ -2348,4 +2348,28 @@
   <data name="Front_Media_PhotoTitlePlaceholder" xml:space="preserve">
     <value>Photo</value>
   </data>
+  <data name="Calendar_Export_TitleFormat" xml:space="preserve">
+    <value>{0} — {1}</value>
+  </data>
+  <data name="Front_Calendar_Export" xml:space="preserve">
+    <value>Export</value>
+  </data>
+  <data name="Admin_Config_Calendar" xml:space="preserve">
+    <value>Calendar export</value>
+  </data>
+  <data name="Admin_Config_Calendar_Enabled" xml:space="preserve">
+    <value>Enabled</value>
+  </data>
+  <data name="Admin_Config_Calendar_EnabledDescription" xml:space="preserve">
+    <value>The events can be downloaded as an iCalendar (*.ics) file or subscribed to from Google Calendar, Outlook or Apple Calendar.</value>
+  </data>
+  <data name="Admin_Config_Calendar_FeedUrl" xml:space="preserve">
+    <value>Subscription address</value>
+  </data>
+  <data name="Admin_Config_Calendar_FeedUrlDescription" xml:space="preserve">
+    <value>Anyone who knows this address can read the events without logging in.</value>
+  </data>
+  <data name="Admin_Config_Calendar_Regenerate" xml:space="preserve">
+    <value>Create a new address when saving (the old one will stop working)</value>
+  </data>
 </root>

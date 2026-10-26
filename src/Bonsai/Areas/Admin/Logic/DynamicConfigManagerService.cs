@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Bonsai.Areas.Admin.ViewModels.DynamicConfig;
 using Bonsai.Code.Services.Config;
 using Bonsai.Data;
@@ -40,6 +41,13 @@ public class DynamicConfigManagerService
     {
         var wrapper = await _db.DynamicConfig.FirstAsync();
         var config = _mapper.Map<DynamicConfig>(request);
+
+        if (request.RegenerateCalendarFeedKey)
+            config.CalendarFeedKey = null;
+
+        if (config.CalendarExportEnabled && string.IsNullOrEmpty(config.CalendarFeedKey))
+            config.CalendarFeedKey = Guid.NewGuid().ToString("N");
+
         wrapper.Value = JsonConvert.SerializeObject(config);
     }
 }

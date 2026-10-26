@@ -6747,5 +6747,77 @@ namespace Bonsai.Localization {
                 return ResourceManager.GetString("Startup_Task_TreeBuilding", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} — {1}.
+        /// </summary>
+        public static string Calendar_Export_TitleFormat {
+            get {
+                return ResourceManager.GetString("Calendar_Export_TitleFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Экспорт.
+        /// </summary>
+        public static string Front_Calendar_Export {
+            get {
+                return ResourceManager.GetString("Front_Calendar_Export", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Экспорт календаря.
+        /// </summary>
+        public static string Admin_Config_Calendar {
+            get {
+                return ResourceManager.GetString("Admin_Config_Calendar", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Разрешён.
+        /// </summary>
+        public static string Admin_Config_Calendar_Enabled {
+            get {
+                return ResourceManager.GetString("Admin_Config_Calendar_Enabled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to События можно скачать в формате iCalendar (*.ics) или подписаться на них в Google Calendar, Outlook или Apple Calendar..
+        /// </summary>
+        public static string Admin_Config_Calendar_EnabledDescription {
+            get {
+                return ResourceManager.GetString("Admin_Config_Calendar_EnabledDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Адрес подписки.
+        /// </summary>
+        public static string Admin_Config_Calendar_FeedUrl {
+            get {
+                return ResourceManager.GetString("Admin_Config_Calendar_FeedUrl", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Каждый, кто знает этот адрес, может читать события без входа на сайт..
+        /// </summary>
+        public static string Admin_Config_Calendar_FeedUrlDescription {
+            get {
+                return ResourceManager.GetString("Admin_Config_Calendar_FeedUrlDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Создать новый адрес при сохранении (старый перестанет работать).
+        /// </summary>
+        public static string Admin_Config_Calendar_Regenerate {
+            get {
+                return ResourceManager.GetString("Admin_Config_Calendar_Regenerate", resourceCulture);
+            }
+        }
     }
 }

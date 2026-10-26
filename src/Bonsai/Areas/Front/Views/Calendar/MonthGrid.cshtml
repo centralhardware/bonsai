@@ -1,11 +1,14 @@
 ﻿@addTagHelper *, Bonsai
+@using Bonsai.Code.Services.Config
 @using Bonsai.Localization
+@inject BonsaiConfigService ConfigService
 @model Bonsai.Areas.Front.ViewModels.Calendar.CalendarMonthVM
 @{
     var date = new DateTime(Model.Year, Model.Month, 1);
     var prev = date.AddMonths(-1);
     var next = date.AddMonths(1);
     var weekDays = Texts.Front_Calendar_WeekdaysShort.Split(',').Select(x => x.Trim());
+    var canExport = ConfigService.GetDynamicConfig().CalendarExportEnabled;
 }
 
 <div class="calendar-header">
@@ -57,3 +60,9 @@
         }
     </tbody>
 </table>
+@if (canExport)
+{
+    <div class="calendar-export">
+        <a href="@Url.Action("Export", "Calendar", new {area = "Front"})" download>@Texts.Front_Calendar_Export</a>
+    </div>
+}

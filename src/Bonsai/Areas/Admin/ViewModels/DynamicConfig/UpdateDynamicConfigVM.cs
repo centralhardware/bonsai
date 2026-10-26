@@ -55,6 +55,21 @@ public class UpdateDynamicConfigVM: IMapped
     /// </summary>
     public bool McpEnabled { get; set; }
 
+    /// <summary>
+    /// Flag indicating that the events can be exported as an iCalendar (*.ics) feed.
+    /// </summary>
+    public bool CalendarExportEnabled { get; set; }
+
+    /// <summary>
+    /// Secret part of the iCalendar feed's address.
+    /// </summary>
+    public string CalendarFeedKey { get; set; }
+
+    /// <summary>
+    /// Flag indicating that the iCalendar feed's address must be replaced with a new one.
+    /// </summary>
+    public bool RegenerateCalendarFeedKey { get; set; }
+
     public void Configure(TypeAdapterConfig config)
     {
         config.NewConfig<UpdateDynamicConfigVM, Code.Services.Config.DynamicConfig>()
@@ -65,7 +80,9 @@ public class UpdateDynamicConfigVM: IMapped
               .Map(x => x.TreeKinds, x => x.TreeKinds == null ? 0 : x.TreeKinds.Aggregate((TreeKind)0, (a, b) => a | b))
               .Map(x => x.TreeDirection, x => x.TreeDirection)
               .Map(x => x.TreeViewMode, x => x.TreeViewMode)
-              .Map(x => x.McpEnabled, x => x.McpEnabled);
+              .Map(x => x.McpEnabled, x => x.McpEnabled)
+              .Map(x => x.CalendarExportEnabled, x => x.CalendarExportEnabled)
+              .Map(x => x.CalendarFeedKey, x => x.CalendarFeedKey);
 
         config.NewConfig<Code.Services.Config.DynamicConfig, UpdateDynamicConfigVM>()
               .Map(x => x.Title, x => x.Title)
@@ -75,6 +92,8 @@ public class UpdateDynamicConfigVM: IMapped
               .Map(x => x.TreeKinds, x => Enum.GetValues<TreeKind>().Where(y => x.TreeKinds.HasFlag(y)).ToArray())
               .Map(x => x.TreeDirection, x => x.TreeDirection)
               .Map(x => x.TreeViewMode, x => x.TreeViewMode)
-              .Map(x => x.McpEnabled, x => x.McpEnabled);
+              .Map(x => x.McpEnabled, x => x.McpEnabled)
+              .Map(x => x.CalendarExportEnabled, x => x.CalendarExportEnabled)
+              .Map(x => x.CalendarFeedKey, x => x.CalendarFeedKey);
     }
 }
