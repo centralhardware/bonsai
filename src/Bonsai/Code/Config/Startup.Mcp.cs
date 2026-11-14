@@ -37,11 +37,9 @@ public partial class Startup
                 options.ServerInfo = new() { Name = "Bonsai Family Wiki", Version = "1.0.0" };
                 options.ServerInstructions = GetServerInstructions();
             })
-            .WithHttpTransport(options =>
-            {
-                options.IdleTimeout = TimeSpan.FromDays(1);
-                options.MaxIdleSessionCount = 100;
-            })
+            // Stateless (the SDK default since the 2026-07-28 protocol revision): every request is
+            // self-contained and tools resolve the user from the request's OAuth token.
+            .WithHttpTransport()
             .WithToolsFromAssembly(typeof(Startup).Assembly, jsonOpts);
     }
 
