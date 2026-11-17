@@ -37,11 +37,7 @@ public partial class Startup
                 options.ServerInfo = new() { Name = "Bonsai Family Wiki", Version = "1.0.0" };
                 options.ServerInstructions = GetServerInstructions();
             })
-            .WithHttpTransport(options =>
-            {
-                options.IdleTimeout = TimeSpan.FromDays(1);
-                options.MaxIdleSessionCount = 100;
-            })
+            .WithHttpTransport()
             .WithToolsFromAssembly(typeof(Startup).Assembly, jsonOpts);
     }
 
@@ -102,7 +98,7 @@ public partial class Startup
 
                 // Set token lifetimes
                 options.SetAccessTokenLifetime(TimeSpan.FromHours(1))
-                    .SetRefreshTokenLifetime(TimeSpan.FromDays(365 * 5));
+                    .SetRefreshTokenLifetime(TimeSpan.FromDays(14));
 
                 // Add custom handler to include registration_endpoint in discovery document
                 // This is required for MCP clients that use Dynamic Client Registration
